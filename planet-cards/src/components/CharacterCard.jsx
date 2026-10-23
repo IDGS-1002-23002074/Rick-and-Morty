@@ -1,9 +1,18 @@
 import "../styles/PlanetCard.css";
 
-export default function CharacterCard({ character }) {
+export default function CharacterCard({ character, isFavorite, onToggleFavorite }) {
   return (
     <article className="planet character-card" style={{ "--planet-color": character.status === "Alive" ? "#58d68d" : character.status === "Dead" ? "#ff6b81" : "#aab2bd" }}>
       <img className="character-image" src={character.image} alt={`Retrato de ${character.name}`} loading="lazy" />
+      <button
+        className={`favorite-btn${isFavorite ? " is-favorite" : ""}`}
+        type="button"
+        onClick={onToggleFavorite}
+        aria-pressed={isFavorite}
+        aria-label={isFavorite ? `Quitar a ${character.name} de favoritos` : `Agregar a ${character.name} a favoritos`}
+      >
+        {isFavorite ? "★ Guardado en favoritos" : "☆ Agregar a favoritos"}
+      </button>
       <div className="character-content">
         <div className="planet__header">
           <span className="planet__emoji">🛸</span>

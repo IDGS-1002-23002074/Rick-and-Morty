@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useCharacters } from "./hooks/useCharacters";
+import { useLocalStorage } from "./hooks/useLocalStorage";
 import CharacterCard from "./components/CharacterCard";
 import Pagination from "./components/Pagination";
 import "./styles/characters.css";
@@ -8,7 +9,7 @@ function App() {
   const [page, setPage] = useState(1);
   const [searchInput, setSearchInput] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-
+  const [favoriteIds, setFavoriteIds] = useLocalStorage("planet-cards-favorites", []);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -20,12 +21,21 @@ function App() {
 
   const { characters, totalPages, totalCharacters, loading, error } = useCharacters(page, searchTerm);
 
+  function toggleFavorite(characterId) {
+    setFavoriteIds((currentIds) =>
+      currentIds.includes(characterId)
+        ? currentIds.filter((id) => id !== characterId)
+        : [...currentIds, characterId]
+    );
+  }
+
   return (
     <div className="app-container">
       <header className="app-header">
         <p className="eyebrow">UNIVERSO MULTIVERSAL</p>
         <h1>Rick <span>&amp;</span> Morty</h1>
         <p>Explora personajes de todas las dimensiones.</p>
+        <p className="favorites-summary" aria-live="polite">★ {favoriteIds.length} {favoriteIds.length === 1 ? "favorito guardado" : "favoritos guardados"}</p>
       </header>
 
       <section className="search-panel" aria-label="Buscar personajes">
@@ -53,7 +63,12 @@ function App() {
         {!loading && !error && characters.length > 0 && (
           <>
             <section className="cards-grid" aria-label="Personajes">
-              {characters.map((character) => <CharacterCard key={character.id} character={character} />)}
+              {characters.map((character) => <CharacterCard
+                key={character.id}
+                character={character}
+                isFavorite={favoriteIds.includes(character.id)}
+                onToggleFavorite={() => toggleFavorite(character.id)}
+              />)}
             </section>
             <Pagination
               page={page}
