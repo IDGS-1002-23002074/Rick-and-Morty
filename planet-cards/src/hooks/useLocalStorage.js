@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+/** Guarda un estado en localStorage y lo recupera al volver a abrir la app. */
 export function useLocalStorage(key, initialValue) {
   const [value, setValue] = useState(() => {
     try {
